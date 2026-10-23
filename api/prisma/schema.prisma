@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+  profile      Profile?
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Profile {
+  id        String    @id @default(cuid())
+  userId    String?   @unique
+  skinType  String    @default("combination")
+  concerns  String[]  @default([])
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routines  Routine[]
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  brand       String
+  category    String
+  barcode     String?   @unique
+  source      String?
+  ingredients String[]
+  routines    Routine[]
+}
+
+model Routine {
+  id        String  @id @default(cuid())
+  profileId String
+  productId String
+  period    String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, productId, period])
+}

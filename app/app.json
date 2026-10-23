@@ -1,0 +1,1 @@
+{"expo":{"name":"SkinWise","slug":"skinwise","scheme":"skinwise","web":{"bundler":"metro"},"plugins":[["expo-camera",{"cameraPermission":"Allow SkinWise to scan product barcodes."}] ]}}
